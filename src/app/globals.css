@@ -1,0 +1,335 @@
+@import "tailwindcss";
+
+/* =============================================
+   DESIGN TOKENS
+   ============================================= */
+:root {
+  --bg:        #05050a;
+  --blue:      #3b82f6;
+  --purple:    #8b5cf6;
+  --cyan:      #06b6d4;
+  --green:     #10b981;
+  --glow-blue: rgba(59,130,246,0.25);
+  --glow-purple: rgba(139,92,246,0.25);
+  --font-sans: var(--font-inter), "Inter", system-ui, -apple-system, sans-serif;
+  --font-code: var(--font-mono), "JetBrains Mono", "Fira Code", monospace;
+}
+
+/* =============================================
+   BASE RESET
+   ============================================= */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 72px;
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  background: var(--bg);
+  color: #e8e8f0;
+  font-family: var(--font-sans);
+  overflow-x: hidden;
+  line-height: 1.65;
+  width: 100%;
+  min-height: 100vh;
+}
+
+/* Hide the browser default cursor site-wide */
+html, body, * {
+  cursor: none !important;
+}
+
+/* =============================================
+   SELECTION
+   ============================================= */
+::selection {
+  background: rgba(59,130,246,0.28);
+  color: #fff;
+}
+
+/* =============================================
+   SCROLLBAR
+   ============================================= */
+::-webkit-scrollbar          { width: 3px; }
+::-webkit-scrollbar-track    { background: #0a0a12; }
+::-webkit-scrollbar-thumb    {
+  background: linear-gradient(to bottom, #3b82f6, #8b5cf6);
+  border-radius: 3px;
+}
+
+/* =============================================
+   LAYOUT CONTAINER
+   All sections use .page-container as the
+   inner wrapper to guarantee centring.
+   ============================================= */
+.page-container {
+  width: 100%;
+  max-width: 1160px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1.75rem;
+  padding-right: 1.75rem;
+}
+
+@media (min-width: 768px) {
+  .page-container {
+    padding-left: 3rem;
+    padding-right: 3rem;
+  }
+}
+
+@media (min-width: 1280px) {
+  .page-container {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+}
+
+/* Narrow variant for focused sections */
+.page-container-sm {
+  width: 100%;
+  max-width: 820px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1.75rem;
+  padding-right: 1.75rem;
+}
+
+@media (min-width: 768px) {
+  .page-container-sm {
+    padding-left: 3rem;
+    padding-right: 3rem;
+  }
+}
+
+/* =============================================
+   SECTION SPACING
+   ============================================= */
+.section-gap {
+  padding-top: 6rem;
+  padding-bottom: 6rem;
+}
+
+@media (min-width: 768px) {
+  .section-gap {
+    padding-top: 7.5rem;
+    padding-bottom: 7.5rem;
+  }
+}
+
+/* Thin gradient rule between sections */
+.section-rule {
+  height: 1px;
+  width: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255,255,255,0.055) 25%,
+    rgba(255,255,255,0.055) 75%,
+    transparent 100%
+  );
+}
+
+/* =============================================
+   TYPOGRAPHY
+   ============================================= */
+.section-eyebrow {
+  display: block;
+  font-family: var(--font-code);
+  font-size: 0.68rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(96,165,250,0.65);
+  margin-bottom: 0.9rem;
+}
+
+.gradient-text {
+  background: linear-gradient(135deg, #60a5fa, #8b5cf6, #06b6d4);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* =============================================
+   BUTTONS  — the definitive fix
+   All buttons use explicit padding, nowrap,
+   inline-flex centring, and min-width.
+   ============================================= */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  padding: 0.65rem 1.5rem;        /* top/bottom · left/right */
+  min-width: 7rem;
+  border-radius: 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+  text-align: center;
+  text-decoration: none;
+  vertical-align: middle;
+  transition: transform 0.18s ease, opacity 0.18s ease, box-shadow 0.18s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn:hover  { transform: translateY(-2px); }
+.btn:active { transform: translateY(0) scale(0.97); }
+
+/* Solid primary */
+.btn-primary {
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  color: #fff;
+  box-shadow: 0 0 28px rgba(59,130,246,0.28);
+}
+.btn-primary:hover { box-shadow: 0 0 40px rgba(59,130,246,0.42); }
+
+/* Ghost / outlined */
+.btn-ghost {
+  background: rgba(255,255,255,0.05);
+  color: rgba(255,255,255,0.78);
+  border: 1px solid rgba(255,255,255,0.11);
+}
+.btn-ghost:hover {
+  background: rgba(255,255,255,0.09);
+  color: #fff;
+  border-color: rgba(255,255,255,0.18);
+}
+
+/* Subtle (tertiary) */
+.btn-subtle {
+  background: rgba(255,255,255,0.035);
+  color: rgba(255,255,255,0.55);
+  border: 1px solid rgba(255,255,255,0.07);
+}
+.btn-subtle:hover {
+  background: rgba(255,255,255,0.065);
+  color: rgba(255,255,255,0.85);
+}
+
+/* Icon-only square */
+.btn-icon {
+  width: 2.5rem;
+  height: 2.5rem;
+  min-width: unset;
+  padding: 0;
+  border-radius: 0.65rem;
+}
+
+/* =============================================
+   GLASS CARDS
+   ============================================= */
+.glass-card {
+  background: rgba(255,255,255,0.028);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 1rem;
+}
+
+.glass-card-hover {
+  transition: border-color 0.3s, box-shadow 0.3s, transform 0.3s;
+}
+.glass-card-hover:hover {
+  border-color: rgba(59,130,246,0.25);
+  box-shadow: 0 0 36px rgba(59,130,246,0.09);
+  transform: translateY(-3px);
+}
+
+/* =============================================
+   SKILL BAR
+   ============================================= */
+.skill-bar {
+  width: 100%;
+  height: 4px;
+  border-radius: 2px;
+  background: rgba(255,255,255,0.07);
+  overflow: hidden;
+}
+.skill-fill {
+  height: 100%;
+  border-radius: 2px;
+  transform-origin: left;
+}
+
+/* =============================================
+   PARTICLES CANVAS
+   ============================================= */
+#particles-canvas {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* =============================================
+   NOISE OVERLAY
+   ============================================= */
+.noise::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  opacity: 0.018;
+  pointer-events: none;
+  z-index: 9998;
+}
+
+/* =============================================
+   KEYFRAMES
+   ============================================= */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-8px); }
+}
+
+@keyframes aurora {
+  0%   { transform: rotate(0deg) scale(1); }
+  33%  { transform: rotate(120deg) scale(1.08); }
+  66%  { transform: rotate(240deg) scale(0.92); }
+  100% { transform: translateX(0) scale(1); }
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+
+@keyframes pulse-dot {
+  0%, 100% { transform: scale(1);   opacity: 1; }
+  50%       { transform: scale(1.5); opacity: 0.5; }
+}
+
+@keyframes spin-slow {
+  to { transform: rotate(360deg); }
+}
+
+/* =============================================
+   CURSOR  (the new design – a crisp crosshair
+   dot + soft glow ring)
+   ============================================= */
+.cursor-ring {
+  position: fixed;
+  top: 0; left: 0;
+  pointer-events: none;
+  z-index: 99999;
+  will-change: transform;
+}
+
+.cursor-dot {
+  position: fixed;
+  top: 0; left: 0;
+  pointer-events: none;
+  z-index: 99999;
+  will-change: transform;
+}
