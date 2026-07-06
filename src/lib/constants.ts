@@ -13,7 +13,7 @@ export const PERSONAL = {
     "CS Undergraduate",
   ],
   tagline: "Building Elegant Mobile Experiences",
-  bio: "Motivated Computer Science undergraduate with 2+ years of experience specializing in cross-platform mobile application development. I craft pixel-perfect, performant mobile apps using Flutter & Firebase — from real-time tracking systems to ML-powered diagnostics.",
+  bio: "Motivated Computer Science undergraduate with 2+ years of internship experience specializing in cross-platform mobile application development. I craft pixel-perfect, performant mobile apps using Flutter & Firebase — from real-time tracking systems to ML-powered diagnostics.",
   location: "Rajahmundry, Andhra Pradesh, India",
   email: "shaikshahidshariff@gmail.com",
   linkedin: "https://www.linkedin.com/in/shaik-shahid-shariff-/",
@@ -24,7 +24,7 @@ export const PERSONAL = {
 };
 
 export const STATS = [
-  { label: "Years Experience", value: "2+", suffix: "" },
+  { label: "Yrs Internship Exp", value: "2+", suffix: "" },
   { label: "Projects Built", value: "10+", suffix: "" },
   { label: "Certifications", value: "4", suffix: "" },
   { label: "ML Accuracy", value: "99", suffix: "%" },
@@ -90,10 +90,11 @@ export const EXPERIENCE = [
     title: "Flutter Developer Intern",
     company: "Technical Hub",
     period: "2023 – 2024",
-    type: "Internship",
+    type: "Internship (2 Years Exp)",
     description:
-      "Developed production-ready Flutter applications and collaborated directly with clients to deliver high-quality mobile experiences.",
+      "2 Years of hands-on internship experience developing production-ready Flutter applications and collaborating directly with clients to deliver high-quality mobile experiences.",
     highlights: [
+      "2+ Years of hands-on Flutter Internship Experience",
       "Developed multiple Flutter applications from concept to production deployment",
       "Integrated REST APIs for seamless data communication",
       "Implemented Google Maps API for location-based features",

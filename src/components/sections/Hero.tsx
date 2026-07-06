@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
+import { useEffect, useState, useRef } from "react";
+import { motion, useScroll, useTransform } from "framer-motion";
 import { GitBranch, Link, Mail, Download, ArrowDown, MapPin, Sparkles } from "lucide-react";
 import ParticleField from "@/components/effects/ParticleField";
 import { PERSONAL } from "@/lib/constants";
@@ -40,10 +40,23 @@ function useTypewriter(words: string[], typeMs = 80, deleteMs = 42, pauseMs = 22
 
 export default function Hero() {
   const typed = useTypewriter(ROLES);
+  const heroRef = useRef<HTMLElement>(null);
+
+  // Parallax scroll hooks for the hero portrait image
+  const { scrollYProgress } = useScroll({
+    target: heroRef,
+    offset: ["start start", "end start"],
+  });
+
+  const photoY      = useTransform(scrollYProgress, [0, 1], [0, 110]);
+  const photoScale  = useTransform(scrollYProgress, [0, 1], [1, 0.85]);
+  const photoRotate = useTransform(scrollYProgress, [0, 1], [0, -10]);
+  const photoOpacity = useTransform(scrollYProgress, [0, 0.8, 1], [1, 0.8, 0]);
 
   return (
     <section
       id="hero"
+      ref={heroRef}
       style={{
         position: "relative",
         minHeight: "100vh",
@@ -51,6 +64,8 @@ export default function Hero() {
         alignItems: "center",
         justifyContent: "center",
         overflow: "hidden",
+        paddingTop: "4rem",
+        paddingBottom: "4rem",
       }}
     >
       <ParticleField />
@@ -101,11 +116,56 @@ export default function Hero() {
         padding: "0 1.75rem",
       }}>
 
+        {/* Scroll-Animated Hero Avatar Photo */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.8, y: 20 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          transition={{ delay: 0.2, duration: 0.6, type: "spring", stiffness: 200 }}
+          style={{
+            y: photoY,
+            scale: photoScale,
+            rotate: photoRotate,
+            opacity: photoOpacity,
+            position: "relative",
+            marginBottom: "1.5rem",
+          }}
+        >
+          <div style={{
+            width: 104,
+            height: 104,
+            borderRadius: "50%",
+            padding: "3px",
+            background: "linear-gradient(135deg, #3b82f6, #8b5cf6, #06b6d4)",
+            boxShadow: "0 0 35px rgba(59,130,246,0.35)",
+            display: "inline-block",
+            position: "relative",
+          }}>
+            <div style={{
+              width: "100%",
+              height: "100%",
+              borderRadius: "50%",
+              overflow: "hidden",
+              background: "#0c0d18",
+            }}>
+              <img
+                src="/shahid.jpg"
+                alt={PERSONAL.name}
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "cover",
+                  objectPosition: "center top",
+                }}
+              />
+            </div>
+          </div>
+        </motion.div>
+
         {/* Available badge */}
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1.4, duration: 0.55 }}
+          transition={{ delay: 0.4, duration: 0.55 }}
           style={{
             display: "inline-flex",
             alignItems: "center",
@@ -117,7 +177,7 @@ export default function Hero() {
             color: "rgba(147,197,253,0.9)",
             background: "rgba(59,130,246,0.1)",
             border: "1px solid rgba(59,130,246,0.22)",
-            marginBottom: "2rem",
+            marginBottom: "1.8rem",
           }}
         >
           <span style={{
@@ -134,7 +194,7 @@ export default function Hero() {
         <motion.h1
           initial={{ opacity: 0, y: 28 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1.55, duration: 0.7 }}
+          transition={{ delay: 0.55, duration: 0.7 }}
           style={{
             fontSize: "clamp(2.8rem, 8vw, 5.5rem)",
             fontWeight: 800,
@@ -152,7 +212,7 @@ export default function Hero() {
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 1.85, duration: 0.5 }}
+          transition={{ delay: 0.75, duration: 0.5 }}
           style={{
             display: "flex",
             alignItems: "center",
@@ -180,7 +240,7 @@ export default function Hero() {
         <motion.p
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1.95, duration: 0.5 }}
+          transition={{ delay: 0.85, duration: 0.5 }}
           style={{
             fontSize: "clamp(0.95rem, 1.8vw, 1.1rem)",
             color: "rgba(255,255,255,0.38)",
@@ -196,7 +256,7 @@ export default function Hero() {
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 2.05, duration: 0.5 }}
+          transition={{ delay: 0.95, duration: 0.5 }}
           style={{
             display: "inline-flex",
             alignItems: "center",
@@ -214,7 +274,7 @@ export default function Hero() {
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 2.15, duration: 0.5 }}
+          transition={{ delay: 1.05, duration: 0.5 }}
           style={{
             display: "flex",
             flexWrap: "wrap",
@@ -261,7 +321,7 @@ export default function Hero() {
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 2.28, duration: 0.5 }}
+          transition={{ delay: 1.15, duration: 0.5 }}
           style={{
             display: "flex",
             alignItems: "center",
@@ -292,7 +352,7 @@ export default function Hero() {
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 3.2, duration: 1 }}
+        transition={{ delay: 1.4, duration: 1 }}
         style={{
           position: "absolute",
           bottom: "2rem",

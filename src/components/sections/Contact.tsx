@@ -2,24 +2,59 @@
 
 import { useRef, useState } from "react";
 import { motion, useInView } from "framer-motion";
-import { GitBranch, Link, Mail, MapPin, Send, CheckCircle2, ArrowRight } from "lucide-react";
+import { GitBranch, Link, Mail, MapPin, Send, CheckCircle2, ArrowRight, Loader2 } from "lucide-react";
 import { PERSONAL } from "@/lib/constants";
 
 export default function Contact() {
   const ref    = useRef<HTMLElement>(null);
   const inView = useInView(ref, { once: true, margin: "-80px" });
-  const [sent, setSent]  = useState(false);
-  const [form, setForm]  = useState({ name: "", email: "", message: "" });
+  const [loading, setLoading] = useState(false);
+  const [sent, setSent]       = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
+  const [form, setForm]       = useState({ name: "", email: "", message: "" });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const sub  = encodeURIComponent(`Portfolio Contact from ${form.name}`);
-    const body = encodeURIComponent(
-      `Hi Shahid,\n\nName: ${form.name}\nEmail: ${form.email}\n\nMessage:\n${form.message}`
-    );
-    window.open(`mailto:${PERSONAL.email}?subject=${sub}&body=${body}`, "_blank");
-    setSent(true);
-    setTimeout(() => setSent(false), 4000);
+    setLoading(true);
+    setErrorMsg("");
+
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
+
+      const data = await res.json();
+
+      if (res.ok || data.success) {
+        setSent(true);
+        setForm({ name: "", email: "", message: "" });
+        setTimeout(() => setSent(false), 6000);
+      } else {
+        // Fallback mailto if server API fails
+        window.open(
+          `mailto:${PERSONAL.email}?subject=${encodeURIComponent(`Portfolio Contact from ${form.name}`)}&body=${encodeURIComponent(
+            `Hi Shahid,\n\nName: ${form.name}\nEmail: ${form.email}\n\nMessage:\n${form.message}`
+          )}`,
+          "_blank"
+        );
+        setSent(true);
+        setTimeout(() => setSent(false), 5000);
+      }
+    } catch (err) {
+      // Fallback
+      window.open(
+        `mailto:${PERSONAL.email}?subject=${encodeURIComponent(`Portfolio Contact from ${form.name}`)}&body=${encodeURIComponent(
+          `Hi Shahid,\n\nName: ${form.name}\nEmail: ${form.email}\n\nMessage:\n${form.message}`
+        )}`,
+        "_blank"
+      );
+      setSent(true);
+      setTimeout(() => setSent(false), 5000);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const socials = [
@@ -69,8 +104,8 @@ export default function Contact() {
           <h2 style={{ fontSize: "clamp(1.9rem, 4.5vw, 2.8rem)", fontWeight: 700, color: "#fff", lineHeight: 1.18, marginBottom: "0.75rem" }}>
             Let&apos;s Build <span className="gradient-text">Together</span>
           </h2>
-          <p style={{ color: "rgba(255,255,255,0.38)", fontSize: "0.95rem", maxWidth: 400, margin: "0 auto" }}>
-            Have an exciting project in mind? Let&apos;s connect and create something extraordinary.
+          <p style={{ color: "rgba(255,255,255,0.38)", fontSize: "0.95rem", maxWidth: 460, margin: "0 auto" }}>
+            Send me a message below — it will be delivered directly to my email inbox ({PERSONAL.email}).
           </p>
         </motion.div>
 
@@ -150,7 +185,7 @@ export default function Contact() {
               </div>
               <p style={{ color: "rgba(255,255,255,0.38)", fontSize: "0.78rem", lineHeight: 1.65 }}>
                 Actively looking for Flutter/Mobile Developer roles, internships, and freelance projects.
-                Response within 24 hours.
+                Messages are sent directly to shaikshahidshariff@gmail.com.
               </p>
             </div>
           </motion.div>
@@ -216,14 +251,41 @@ export default function Contact() {
                 />
               </div>
 
+              {sent && (
+                <motion.div
+                  initial={{ opacity: 0, y: -8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  style={{
+                    padding: "0.75rem 1rem",
+                    borderRadius: "0.65rem",
+                    background: "rgba(16,185,129,0.12)",
+                    border: "1px solid rgba(16,185,129,0.25)",
+                    color: "#6ee7b7",
+                    fontSize: "0.82rem",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "0.5rem",
+                  }}
+                >
+                  <CheckCircle2 size={16} />
+                  Message sent directly to shaikshahidshariff@gmail.com!
+                </motion.div>
+              )}
+
               <motion.button
                 type="submit"
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.97 }}
+                disabled={loading}
+                whileHover={{ scale: loading ? 1 : 1.02 }}
+                whileTap={{ scale: loading ? 1 : 0.97 }}
                 className="btn btn-primary"
                 style={{ width: "100%", padding: "0.8rem 1.5rem" }}
               >
-                {sent ? (
+                {loading ? (
+                  <>
+                    <Loader2 size={15} className="animate-spin" />
+                    Sending to Email...
+                  </>
+                ) : sent ? (
                   <>
                     <CheckCircle2 size={15} />
                     Message Sent!

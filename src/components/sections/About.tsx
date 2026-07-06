@@ -1,8 +1,8 @@
 "use client";
 
 import { useRef } from "react";
-import { motion, useInView, type Variants } from "framer-motion";
-import { Smartphone, Database, Brain, Wrench, Star } from "lucide-react";
+import { motion, useInView, useScroll, useTransform, type Variants } from "framer-motion";
+import { Smartphone, Database, Brain, Wrench, Star, Sparkles } from "lucide-react";
 import { PERSONAL, STATS } from "@/lib/constants";
 
 const child: Variants = {
@@ -33,11 +33,23 @@ function Stat({ label, value, suffix }: { label: string; value: string; suffix: 
 }
 
 export default function About() {
-  const ref    = useRef<HTMLElement>(null);
-  const inView = useInView(ref, { once: true, margin: "-80px" });
+  const sectionRef = useRef<HTMLElement>(null);
+  const inView     = useInView(sectionRef, { once: true, margin: "-80px" });
+
+  // Scroll animation hooks for the user photo
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start end", "end start"],
+  });
+
+  // Photo scroll dynamics: moves up & down, rotates, and scales smoothly as page scrolls
+  const imageY       = useTransform(scrollYProgress, [0, 0.5, 1], [-45, 0, 45]);
+  const imageRotate  = useTransform(scrollYProgress, [0, 0.5, 1], [-8, 0, 8]);
+  const imageScale   = useTransform(scrollYProgress, [0, 0.5, 1], [0.94, 1.05, 0.95]);
+  const ringRotate   = useTransform(scrollYProgress, [0, 1], [0, 360]);
 
   return (
-    <section id="about" ref={ref} className="section-gap" style={{ position: "relative" }}>
+    <section id="about" ref={sectionRef} className="section-gap" style={{ position: "relative" }}>
       <div className="section-rule" />
 
       {/* BG tint */}
@@ -77,7 +89,7 @@ export default function About() {
             alignItems: "center",
           }}
         >
-          {/* Left */}
+          {/* Left Column */}
           <div style={{ display: "flex", flexDirection: "column", gap: "1.6rem" }}>
             <motion.div variants={child}>
               <p style={{ color: "rgba(255,255,255,0.6)", fontSize: "1rem", lineHeight: 1.72, marginBottom: "1rem" }}>
@@ -148,55 +160,110 @@ export default function About() {
             </motion.div>
           </div>
 
-          {/* Right */}
+          {/* Right Column — Photo with Scroll-Driven Motion */}
           <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-            {/* Avatar card */}
+            {/* Scroll-Animated Image Card */}
             <motion.div
               variants={child}
               className="glass-card"
-              style={{ padding: "2.2rem 1.5rem", textAlign: "center", position: "relative", overflow: "hidden" }}
+              style={{
+                padding: "2.5rem 1.5rem",
+                textAlign: "center",
+                position: "relative",
+                overflow: "hidden",
+                border: "1px solid rgba(59,130,246,0.2)",
+                boxShadow: "0 0 40px rgba(59,130,246,0.12)",
+              }}
             >
               <div style={{
                 position: "absolute", inset: 0, pointerEvents: "none",
-                background: "radial-gradient(ellipse at 30% 30%, rgba(59,130,246,0.12), transparent 55%)",
+                background: "radial-gradient(ellipse at 50% 30%, rgba(59,130,246,0.18), transparent 70%)",
               }} />
 
-              {/* Avatar ring */}
-              <div style={{
-                position: "relative", display: "inline-flex",
-                alignItems: "center", justifyContent: "center",
-                marginBottom: "1.2rem",
-              }}>
-                <div style={{
-                  position: "absolute",
-                  inset: -12,
-                  borderRadius: "50%",
-                  border: "2px solid transparent",
-                  borderTopColor: "#3b82f6",
-                  borderRightColor: "#8b5cf6",
-                  borderBottomColor: "#06b6d4",
-                  animation: "spin-slow 20s linear infinite",
-                }} />
-                <div style={{
-                  width: 108, height: 108, borderRadius: "50%",
-                  background: "linear-gradient(135deg, #1e3a5f, #2d1b69)",
-                  boxShadow: "0 0 40px rgba(59,130,246,0.28)",
-                  display: "flex", alignItems: "center", justifyContent: "center",
-                  fontSize: "2rem", fontWeight: 700, color: "#fff",
-                  userSelect: "none",
-                }}>
-                  SS
-                </div>
-              </div>
+              {/* Scroll Animated Portrait Image Wrapper */}
+              <motion.div
+                style={{
+                  y: imageY,
+                  rotate: imageRotate,
+                  scale: imageScale,
+                  position: "relative",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  marginBottom: "1.4rem",
+                }}
+              >
+                {/* Outer spinning gradient ring linked to scroll */}
+                <motion.div
+                  style={{
+                    rotate: ringRotate,
+                    position: "absolute",
+                    inset: -14,
+                    borderRadius: "50%",
+                    border: "3px dashed transparent",
+                    borderTopColor: "#3b82f6",
+                    borderRightColor: "#8b5cf6",
+                    borderBottomColor: "#06b6d4",
+                    boxShadow: "0 0 25px rgba(59,130,246,0.4)",
+                  }}
+                />
 
-              <h3 style={{ color: "#fff", fontWeight: 600, fontSize: "1rem", marginBottom: "0.25rem" }}>
+                {/* User Photo */}
+                <div style={{
+                  width: 148,
+                  height: 148,
+                  borderRadius: "50%",
+                  overflow: "hidden",
+                  border: "3px solid rgba(255,255,255,0.18)",
+                  boxShadow: "0 0 35px rgba(139,92,246,0.35)",
+                  background: "#0c0d18",
+                  position: "relative",
+                }}>
+                  <img
+                    src="/shahid.jpg"
+                    alt={PERSONAL.name}
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",
+                      objectPosition: "center top",
+                    }}
+                  />
+                </div>
+
+                {/* Floating Scroll Badge */}
+                <motion.div
+                  animate={{ y: [0, -6, 0] }}
+                  transition={{ repeat: Infinity, duration: 3, ease: "easeInOut" }}
+                  style={{
+                    position: "absolute",
+                    bottom: -8,
+                    right: -10,
+                    background: "linear-gradient(135deg, #3b82f6, #8b5cf6)",
+                    padding: "0.35rem 0.65rem",
+                    borderRadius: "999px",
+                    color: "#fff",
+                    fontSize: "0.68rem",
+                    fontWeight: 600,
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "0.3rem",
+                    boxShadow: "0 0 15px rgba(59,130,246,0.5)",
+                  }}
+                >
+                  <Sparkles size={11} />
+                  Shahid
+                </motion.div>
+              </motion.div>
+
+              <h3 style={{ color: "#fff", fontWeight: 700, fontSize: "1.1rem", marginBottom: "0.25rem" }}>
                 {PERSONAL.name}
               </h3>
-              <p style={{ color: "rgba(255,255,255,0.38)", fontSize: "0.8rem", marginBottom: "0.2rem" }}>
+              <p style={{ color: "rgba(255,255,255,0.45)", fontSize: "0.82rem", marginBottom: "0.2rem" }}>
                 Flutter Developer · Software Engineer
               </p>
-              <p style={{ color: "rgba(255,255,255,0.22)", fontSize: "0.75rem" }}>
-                📍 {PERSONAL.location}
+              <p style={{ color: "rgba(96,165,250,0.8)", fontSize: "0.75rem", fontWeight: 500 }}>
+                2+ Years Internship Experience
               </p>
 
               <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "0.4rem", marginTop: "1.2rem" }}>
@@ -209,7 +276,7 @@ export default function About() {
                       padding: "0.28rem 0.7rem",
                       borderRadius: "999px",
                       fontSize: "0.7rem",
-                      color: "rgba(255,255,255,0.52)",
+                      color: "rgba(255,255,255,0.6)",
                       background: "rgba(255,255,255,0.04)",
                       border: "1px solid rgba(255,255,255,0.08)",
                     }}
