@@ -12,6 +12,21 @@ export async function POST(req: Request) {
       );
     }
 
+    // Use Web3Forms access key from environment variables or custom key
+    const accessKey = process.env.WEB3FORMS_ACCESS_KEY;
+
+    if (!accessKey) {
+      // If no key is configured in Vercel env, return notification explaining key requirement
+      return NextResponse.json(
+        {
+          success: false,
+          requireKey: true,
+          message: "WEB3FORMS_ACCESS_KEY is missing. Please add your free Web3Forms access key to Vercel environment variables.",
+        },
+        { status: 400 }
+      );
+    }
+
     // Submit to Web3Forms API to forward directly to shaikshahidshariff@gmail.com
     const res = await fetch("https://api.web3forms.com/submit", {
       method: "POST",
@@ -20,29 +35,31 @@ export async function POST(req: Request) {
         Accept: "application/json",
       },
       body: JSON.stringify({
-        access_key: process.env.WEB3FORMS_ACCESS_KEY || "e2b6db76-805a-406c-9c86-1d12ed3bfa99",
+        access_key: accessKey,
         name,
         email,
         message,
-        subject: `New Portfolio Inquiry from ${name}`,
-        from_name: `${name} (Portfolio Contact Form)`,
-        to_email: "shaikshahidshariff@gmail.com",
+        subject: `Portfolio Inquiry from ${name}`,
+        from_name: `${name} (Portfolio Form)`,
       }),
     });
 
     const data = await res.json();
 
-    if (res.ok || data.success) {
+    if (res.ok && data.success) {
       return NextResponse.json({
         success: true,
-        message: "Your message has been sent to shaikshahidshariff@gmail.com successfully!",
+        message: "Your message has been delivered to shaikshahidshariff@gmail.com!",
       });
     }
 
-    return NextResponse.json({
-      success: true, // Graceful fallback
-      message: "Message processed successfully.",
-    });
+    return NextResponse.json(
+      {
+        success: false,
+        message: data.message || "Failed to deliver message via Web3Forms.",
+      },
+      { status: 500 }
+    );
   } catch (error: any) {
     return NextResponse.json(
       { success: false, message: error?.message || "Failed to send message." },

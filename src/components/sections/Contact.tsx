@@ -2,16 +2,25 @@
 
 import { useRef, useState } from "react";
 import { motion, useInView } from "framer-motion";
-import { GitBranch, Link, Mail, MapPin, Send, CheckCircle2, ArrowRight, Loader2 } from "lucide-react";
+import { GitBranch, Link, Mail, MapPin, Send, CheckCircle2, ArrowRight, Loader2, ExternalLink } from "lucide-react";
 import { PERSONAL } from "@/lib/constants";
 
 export default function Contact() {
   const ref    = useRef<HTMLElement>(null);
   const inView = useInView(ref, { once: true, margin: "-80px" });
-  const [loading, setLoading] = useState(false);
-  const [sent, setSent]       = useState(false);
+  const [loading, setLoading]   = useState(false);
+  const [sent, setSent]         = useState(false);
+  const [sentMailto, setSentMailto] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
-  const [form, setForm]       = useState({ name: "", email: "", message: "" });
+  const [form, setForm]         = useState({ name: "", email: "", message: "" });
+
+  const openMailto = () => {
+    const sub  = encodeURIComponent(`Portfolio Contact from ${form.name || "Visitor"}`);
+    const body = encodeURIComponent(
+      `Hi Shahid,\n\nName: ${form.name}\nEmail: ${form.email}\n\nMessage:\n${form.message}`
+    );
+    window.open(`mailto:${PERSONAL.email}?subject=${sub}&body=${body}`, "_blank");
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -19,39 +28,27 @@ export default function Contact() {
     setErrorMsg("");
 
     try {
-      const res = await fetch("/api/contact", {
+      const res  = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
       });
-
       const data = await res.json();
 
-      if (res.ok || data.success) {
+      if (res.ok && data.success) {
         setSent(true);
         setForm({ name: "", email: "", message: "" });
-        setTimeout(() => setSent(false), 6000);
+        setTimeout(() => setSent(false), 7000);
       } else {
-        // Fallback mailto if server API fails
-        window.open(
-          `mailto:${PERSONAL.email}?subject=${encodeURIComponent(`Portfolio Contact from ${form.name}`)}&body=${encodeURIComponent(
-            `Hi Shahid,\n\nName: ${form.name}\nEmail: ${form.email}\n\nMessage:\n${form.message}`
-          )}`,
-          "_blank"
-        );
-        setSent(true);
-        setTimeout(() => setSent(false), 5000);
+        // Direct fallback to mailto if API key is not configured
+        openMailto();
+        setSentMailto(true);
+        setTimeout(() => setSentMailto(false), 7000);
       }
     } catch (err) {
-      // Fallback
-      window.open(
-        `mailto:${PERSONAL.email}?subject=${encodeURIComponent(`Portfolio Contact from ${form.name}`)}&body=${encodeURIComponent(
-          `Hi Shahid,\n\nName: ${form.name}\nEmail: ${form.email}\n\nMessage:\n${form.message}`
-        )}`,
-        "_blank"
-      );
-      setSent(true);
-      setTimeout(() => setSent(false), 5000);
+      openMailto();
+      setSentMailto(true);
+      setTimeout(() => setSentMailto(false), 7000);
     } finally {
       setLoading(false);
     }
@@ -105,7 +102,7 @@ export default function Contact() {
             Let&apos;s Build <span className="gradient-text">Together</span>
           </h2>
           <p style={{ color: "rgba(255,255,255,0.38)", fontSize: "0.95rem", maxWidth: 460, margin: "0 auto" }}>
-            Send me a message below — it will be delivered directly to my email inbox ({PERSONAL.email}).
+            Send me a message below — it goes directly to my email ({PERSONAL.email}).
           </p>
         </motion.div>
 
@@ -164,9 +161,30 @@ export default function Contact() {
               </motion.div>
             ))}
 
+            {/* Direct Gmail launch button */}
+            <a
+              href={`mailto:${PERSONAL.email}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn btn-ghost"
+              style={{
+                width: "100%",
+                padding: "0.75rem 1rem",
+                fontSize: "0.82rem",
+                display: "inline-flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: "0.5rem",
+                marginTop: "0.2rem",
+              }}
+            >
+              <Mail size={14} />
+              Open Direct Email (Gmail App)
+              <ExternalLink size={12} />
+            </a>
+
             {/* Availability card */}
             <div style={{
-              marginTop: "0.5rem",
               padding: "1.2rem 1.4rem",
               borderRadius: "0.85rem",
               background: "rgba(16,185,129,0.05)",
@@ -185,7 +203,7 @@ export default function Contact() {
               </div>
               <p style={{ color: "rgba(255,255,255,0.38)", fontSize: "0.78rem", lineHeight: 1.65 }}>
                 Actively looking for Flutter/Mobile Developer roles, internships, and freelance projects.
-                Messages are sent directly to shaikshahidshariff@gmail.com.
+                Responses usually within 24 hours.
               </p>
             </div>
           </motion.div>
@@ -268,7 +286,28 @@ export default function Contact() {
                   }}
                 >
                   <CheckCircle2 size={16} />
-                  Message sent directly to shaikshahidshariff@gmail.com!
+                  Message delivered directly to shaikshahidshariff@gmail.com!
+                </motion.div>
+              )}
+
+              {sentMailto && (
+                <motion.div
+                  initial={{ opacity: 0, y: -8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  style={{
+                    padding: "0.75rem 1rem",
+                    borderRadius: "0.65rem",
+                    background: "rgba(59,130,246,0.12)",
+                    border: "1px solid rgba(59,130,246,0.25)",
+                    color: "#93c5fd",
+                    fontSize: "0.82rem",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "0.5rem",
+                  }}
+                >
+                  <Mail size={16} />
+                  Opened email client with pre-filled message for shaikshahidshariff@gmail.com!
                 </motion.div>
               )}
 
@@ -283,7 +322,7 @@ export default function Contact() {
                 {loading ? (
                   <>
                     <Loader2 size={15} className="animate-spin" />
-                    Sending to Email...
+                    Sending Message...
                   </>
                 ) : sent ? (
                   <>
