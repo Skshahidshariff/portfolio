@@ -12,20 +12,9 @@ export async function POST(req: Request) {
       );
     }
 
-    // Use Web3Forms access key from environment variables or custom key
-    const accessKey = process.env.WEB3FORMS_ACCESS_KEY;
-
-    if (!accessKey) {
-      // If no key is configured in Vercel env, return notification explaining key requirement
-      return NextResponse.json(
-        {
-          success: false,
-          requireKey: true,
-          message: "WEB3FORMS_ACCESS_KEY is missing. Please add your free Web3Forms access key to Vercel environment variables.",
-        },
-        { status: 400 }
-      );
-    }
+    // Web3Forms Access Key for shaikshahidshariff@gmail.com
+    const accessKey =
+      process.env.WEB3FORMS_ACCESS_KEY || "62b48acd-0787-4bd0-b615-c7a92eba617c";
 
     // Submit to Web3Forms API to forward directly to shaikshahidshariff@gmail.com
     const res = await fetch("https://api.web3forms.com/submit", {
@@ -39,8 +28,9 @@ export async function POST(req: Request) {
         name,
         email,
         message,
-        subject: `Portfolio Inquiry from ${name}`,
+        subject: `New Portfolio Inquiry from ${name}`,
         from_name: `${name} (Portfolio Form)`,
+        to_email: "shaikshahidshariff@gmail.com",
       }),
     });
 
@@ -49,7 +39,7 @@ export async function POST(req: Request) {
     if (res.ok && data.success) {
       return NextResponse.json({
         success: true,
-        message: "Your message has been delivered to shaikshahidshariff@gmail.com!",
+        message: "Your message has been delivered to shaikshahidshariff@gmail.com successfully!",
       });
     }
 
